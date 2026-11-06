@@ -14,13 +14,13 @@ Website and admin panel for Kalagram, a learning platform for natural building a
 `start-local.cmd` starts everything on a Windows development PC, and `stop-local.cmd` stops it. Starting can take several minutes on a busy PC.
 
 ```
-.\start-local.cmd -ToolsDir C:\path	o	ools
+.\start-local.cmd -ToolsDir C:\path\to\tools
 ```
 
 - Website: http://localhost:5180
 - Admin panel: http://localhost:5180/admin
 
-`-ToolsDir` is a folder containing JDK 21, Maven and MySQL 8 in `jdk\jdk-21*`, `mavenpache-maven-*` and `mysql\mysql-8*`. Node must also be installed. If you don't have that folder, follow the manual setup below.
+`-ToolsDir` is a folder containing JDK 21, Maven and MySQL 8 in `jdk\jdk-21*`, `maven\apache-maven-*` and `mysql\mysql-8*`. Node must also be installed. If you don't have that folder, follow the manual setup below.
 
 The script runs its own MySQL on port 3307, listening only on this PC with a passwordless root account, and keeps the data in `%USERPROFILE%\.kalagram\mysql-data`. It does not touch any other MySQL installation.
 
