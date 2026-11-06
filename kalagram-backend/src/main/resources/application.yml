@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: kalagram-backend
+  # Local secrets live in kalagram-backend/.env (git-ignored). See .env.example.
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/kalagram?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none  # Flyway owns the schema (src/main/resources/db/migration)
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: ${UPLOAD_MAX_SIZE:20MB}
+      max-request-size: ${UPLOAD_MAX_SIZE:20MB}
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${MAIL_SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${MAIL_STARTTLS:true}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 8000
+      mail.smtp.writetimeout: 8000
+  task:
+    execution:
+      pool:
+        core-size: 2
+        max-size: 4
+
+server:
+  port: ${SERVER_PORT:8080}
+  # Set FORWARD_HEADERS=framework only when running behind a trusted reverse proxy.
+  forward-headers-strategy: ${FORWARD_HEADERS:none}
+
+kalagram:
+  cors-allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5180}
+  upload-dir: ${UPLOAD_DIR:uploads}
+  seed-sample-data: ${SEED_SAMPLE_DATA:true}
+  rate-limit-per-minute: ${RATE_LIMIT_PER_MINUTE:20}
+  jwt:
+    secret: ${JWT_SECRET}     # required, at least 32 characters
+    expiry-hours: ${JWT_EXPIRY_HOURS:8}
+  admin:
+    email: ${ADMIN_EMAIL:}     # first admin is created from these when none exists
+    password: ${ADMIN_PASSWORD:}
+  mail:
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:}
+  whatsapp:
+    enabled: ${WHATSAPP_ENABLED:false}
+    api-version: ${WHATSAPP_API_VERSION:v23.0}
+    phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:}
+    access-token: ${WHATSAPP_ACCESS_TOKEN:}
+    template-name: ${WHATSAPP_TEMPLATE_NAME:new_workshop_registration}
+    template-language: ${WHATSAPP_TEMPLATE_LANGUAGE:en}
+    notify-to: ${WHATSAPP_NOTIFY_TO:919011059088}
