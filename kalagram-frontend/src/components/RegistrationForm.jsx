@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarCheck, CheckCircle2 } from 'lucide-react';
-import { errorMessage, fieldErrors, publicApi } from '../services/api.js';
+import { errorMessage, fieldErrors, IS_PREVIEW, publicApi } from '../services/api.js';
 import { useFetch } from '../hooks/useFetch.js';
 import { useSettings } from '../context/SettingsContext.jsx';
 import { formatDate, formatRange, seatsLabel } from '../utils/format.js';
@@ -41,16 +41,20 @@ function Confirmation({ registration, onAnother }) {
   return (
     <div className="confirmation" role="status">
       <CheckCircle2 size={44} className="confirmation-icon" aria-hidden="true" />
-      <h2 ref={heading} tabIndex={-1}>Registration received!</h2>
-      <p>Thank you, {registration.fullName}. Your seat is held and your registration is pending confirmation. We'll get in touch with the details and next steps.</p>
+      <h2 ref={heading} tabIndex={-1}>{IS_PREVIEW ? 'One more step' : 'Registration received!'}</h2>
+      {IS_PREVIEW ? (
+        <p>Thank you, {registration.fullName}. This is a preview of the website, so your registration has not been saved and no seat is held yet. Please send these details to Kalagram on WhatsApp to register.</p>
+      ) : (
+        <p>Thank you, {registration.fullName}. Your seat is held and your registration is pending confirmation. We'll get in touch with the details and next steps.</p>
+      )}
       <dl className="confirmation-details">
         <div><dt>Registration ID</dt><dd className="registration-id">{registration.registrationId}</dd></div>
         <div><dt>Workshop</dt><dd>{registration.workshopTitle}</dd></div>
         <div><dt>Dates</dt><dd>{formatRange(registration.startDate, registration.endDate)}</dd></div>
         <div><dt>Participants</dt><dd>{registration.participants}</dd></div>
-        <div><dt>Status</dt><dd>Pending</dd></div>
+        <div><dt>Status</dt><dd>{IS_PREVIEW ? 'Not yet sent' : 'Pending'}</dd></div>
       </dl>
-      <p className="confirmation-hint">To reach us faster, send these details to Kalagram on WhatsApp. It opens with the message ready; just press Send.</p>
+      <p className="confirmation-hint">{IS_PREVIEW ? 'WhatsApp' : 'To reach us faster, send these details to Kalagram on WhatsApp. It'} opens with the message ready; just press Send.</p>
       <div className="form-actions center">
         <Button href={whatsappLink(whatsapp, registrationMessage(registration))} className="btn-whatsapp" icon={<WhatsAppIcon size={20} />}>
           Send Registration on WhatsApp
@@ -185,7 +189,7 @@ export default function RegistrationForm({ initialWorkshopId, initialBatchId }) 
         <Button type="submit" loading={submitting} icon={<CalendarCheck size={20} aria-hidden="true" />}>
           {submitting ? 'Registering' : 'Register for Workshop'}
         </Button>
-        <p className="form-note">We'll get in touch with the details and next steps.</p>
+        <p className="form-note">{IS_PREVIEW ? 'Preview website: your details go to Kalagram by WhatsApp and are not stored here.' : "We'll get in touch with the details and next steps."}</p>
       </div>
     </form>
   );

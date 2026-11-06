@@ -5,6 +5,7 @@
 # Frontend
 node_modules/
 dist/
+dist-pages/
 
 # Backend
 target/

@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import SiteLayout from '../layouts/SiteLayout.jsx';
 import { Loading } from '../components/States.jsx';
+import { IS_PREVIEW } from '../services/api.js';
 import Home from '../pages/Home.jsx';
 
 const About = lazy(() => import('../pages/About.jsx'));
@@ -21,7 +22,7 @@ export default function AppRoutes() {
   return (
     <Suspense fallback={<Loading label="Loading" />}>
       <Routes>
-        <Route path="/admin/*" element={<AdminApp />} />
+        <Route path="/admin/*" element={IS_PREVIEW ? <Navigate to="/" replace /> : <AdminApp />} />
         <Route element={<SiteLayout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />

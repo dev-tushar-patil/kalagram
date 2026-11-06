@@ -44,6 +44,7 @@ export const setToken = (token) => (token ? storage()?.setItem(TOKEN_KEY, token)
 /** Uploaded files are served by the API; bundled images are served with the site. */
 export function assetUrl(url) {
   if (!url) return '';
+  if (url.startsWith('/images/')) return `${import.meta.env.BASE_URL}${url.slice(1)}`;
   return url.startsWith('/uploads/') ? `${API_ORIGIN}${url}` : url;
 }
 
@@ -55,7 +56,52 @@ export function errorMessage(error, fallback = 'Something went wrong. Please try
 
 export const fieldErrors = (error) => error?.response?.data?.fieldErrors || {};
 
-export const publicApi = {
+/** True on the static GitHub Pages preview, which has no backend: nothing can be saved there. */
+export const IS_PREVIEW = import.meta.env.VITE_STATIC_PREVIEW === 'true';
+
+let previewData;
+const preview = () => {
+  previewData ||= fetch(`${import.meta.env.BASE_URL}preview-data.json`).then((response) => {
+    if (!response.ok) throw new Error('Preview content could not be loaded');
+    return response.json();
+  });
+  return previewData;
+};
+
+function previewItem(items, slug) {
+  const item = items[slug];
+  if (!item) throw Object.assign(new Error('Not found'), { response: { status: 404, data: { message: 'Not found' } } });
+  return item;
+}
+
+const previewApi = {
+  workshops: () => preview().then((d) => d.workshops),
+  workshop: (slug) => preview().then((d) => previewItem(d.workshopDetails, slug)),
+  gallery: () => preview().then((d) => d.gallery),
+  resources: () => preview().then((d) => d.resources),
+  resource: (slug) => preview().then((d) => previewItem(d.resourceDetails, slug)),
+  resourceCategories: () => preview().then((d) => d.resourceCategories),
+  settings: () => preview().then((d) => d.settings),
+  enquire: async () => ({ id: 0 }),
+  // Builds what the WhatsApp message needs. Nothing is stored and no seat is held.
+  register: async (body) => {
+    const { workshops } = await preview();
+    const workshop = workshops.find((w) => w.id === body.workshopId);
+    const batch = workshop?.upcomingBatches.find((b) => b.id === body.batchId);
+    const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+    return {
+      ...body,
+      registrationId: `PREVIEW-${code}`,
+      status: 'PREVIEW',
+      workshopTitle: workshop?.title,
+      startDate: batch?.startDate,
+      endDate: batch?.endDate,
+      batchLabel: batch?.label,
+    };
+  },
+};
+
+const liveApi = {
   workshops: () => api.get('/workshops').then((r) => r.data),
   workshop: (slug) => api.get(`/workshops/${encodeURIComponent(slug)}`).then((r) => r.data),
   register: (body) => api.post('/registrations', body).then((r) => r.data),
@@ -66,3 +112,5 @@ export const publicApi = {
   resourceCategories: () => api.get('/resource-categories').then((r) => r.data),
   settings: () => api.get('/settings').then((r) => r.data),
 };
+
+export const publicApi = IS_PREVIEW ? previewApi : liveApi;

@@ -86,6 +86,12 @@ Vite proxies `/api` and `/uploads` to `http://localhost:8080`.
 5. **Set prices.** Workshops show "Price on request" until a price is entered.
 6. **Secure MySQL** with a dedicated account and password rather than the local setup above.
 
+## Public preview on GitHub Pages
+
+https://dev-tushar-patil.github.io/kalagram/ is a static preview for showing the design. It has no backend: content is a saved copy, registrations and enquiries go through WhatsApp only and are not stored, seats are not tracked, and there is no admin panel. It is not a replacement for the deployment below.
+
+To update it, run `npm run build:pages` in `kalagram-frontend` with the API running, then publish `dist-pages/` to the `gh-pages` branch. Workshop dates are copied at build time, so rebuild when they change.
+
 ## Deployment
 
 ```

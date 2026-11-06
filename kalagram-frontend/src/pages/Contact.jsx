@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CheckCircle2, ExternalLink, Home as HomeIcon, Leaf, Mail, MapPin, Phone, Send, Sprout, Users } from 'lucide-react';
-import { errorMessage, fieldErrors, publicApi } from '../services/api.js';
+import { errorMessage, fieldErrors, IS_PREVIEW, publicApi } from '../services/api.js';
 import { useSettings } from '../context/SettingsContext.jsx';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { enquiryMessage, FLOATING_MESSAGE, whatsappLink } from '../utils/whatsapp.js';
@@ -68,8 +68,11 @@ function EnquiryForm() {
     return (
       <div className="confirmation small" role="status">
         <CheckCircle2 size={36} className="confirmation-icon" aria-hidden="true" />
-        <h3>Thank you, we have your message.</h3>
-        <p>WhatsApp should have opened with your enquiry ready; just press Send. If it didn't, use the button below.</p>
+        <h3>{IS_PREVIEW ? 'Your message is ready to send.' : 'Thank you, we have your message.'}</h3>
+        <p>
+          {IS_PREVIEW && 'This is a preview of the website, so your message has not been saved. '}
+          WhatsApp should have opened with your enquiry ready; just press Send. If it didn't, use the button below.
+        </p>
         <div className="form-actions center">
           <Button href={sentLink} className="btn-whatsapp" icon={<WhatsAppIcon size={18} />}>Open WhatsApp</Button>
           <Button variant="secondary" onClick={() => setSentLink(null)}>Send another message</Button>
